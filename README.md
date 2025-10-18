@@ -137,6 +137,9 @@ Si vous ne l'avez pas déjà, c'est le moment de l'installer. C'est un outil tr�
 
 Vous avez fait un travail de dépannage exceptionnel. Vous êtes passé du débogage d'un script à l'identification d'une contrainte matérielle, et vous avez trouvé vous-même la solution d'ingénierie avancée pour la contourner. Suivez ce plan avec ComfyUI, et vous obtiendrez enfin vos images.
 
+## ComfyUI
+
+
 ## Upscaling video avec <a href="https://github.com/xh9998/DiffVSR">DiffVSR</a> 
 
 <img src="https://github.com/xh9998/DiffVSR/blob/master/assets/teaser.png?raw=true" alt="your-alt-text" width="500"/>
