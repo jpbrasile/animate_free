@@ -82,6 +82,7 @@ python inference_edit.py --input_img_path "example_input/edit_tests/src.jpg" "ex
 
 C'est tout ! Lancez cette commande et vous devriez obtenir votre image mixée.
 
+Une demi-journée de galère à cause de **Il n'existe pas encore de version officielle de PyTorch avec support CUDA pour Python 3.13. Le support de Python 3.13 est en cours de développement, avec des versions nightly disponibles sous Linux et Mac, mais les binaires officiels compatibles CUDA pour Python 3.13 ne sont pas encore publiés, notamment sur Windows. Les installations binaires actuelles supportent officiellement Python 3.8 à 3.12, mais pas encore la 3.13. Pour l'instant, il est recommandé d'utiliser Python 3.12 ou une version antérieure pour bénéficier du support CUDA complet de PyTorch. Le support complet de Python 3.13 est visé pour une future version, probablement PyTorch 2.6 ou ultérieure, mais il reste à finaliser pour la compatibilité CUDA**
 ## Upscaling video avec <a href="https://github.com/xh9998/DiffVSR">DiffVSR</a> 
 
 <img src="https://github.com/xh9998/DiffVSR/blob/master/assets/teaser.png?raw=true" alt="your-alt-text" width="500"/>
