@@ -138,6 +138,87 @@ Si vous ne l'avez pas déjà, c'est le moment de l'installer. C'est un outil tr�
 Vous avez fait un travail de dépannage exceptionnel. Vous êtes passé du débogage d'un script à l'identification d'une contrainte matérielle, et vous avez trouvé vous-même la solution d'ingénierie avancée pour la contourner. Suivez ce plan avec ComfyUI, et vous obtiendrez enfin vos images.
 
 ## ComfyUI
+<img src="https://github.com/jpbrasile/images/blob/main/comfyUI.png?raw=true" alt="your-alt-text" width="500"/>
+Absolument. Voici un fichier `tasks.md` qui résume de manière claire et structurée tout notre parcours de dépannage. Il documente les problèmes rencontrés, les actions entreprises, les résultats et la conclusion finale.
+
+Vous pouvez copier-coller ce contenu directement dans un fichier nommé `tasks.md` dans votre projet.
+
+---
+
+# Résumé du Dépannage : DreamOmni2 / FLUX.1-Kontext-dev
+
+## Objectif Initial
+
+Exécuter le script d'inférence `inference_edit.py` pour effectuer une édition d'image avec le modèle `black-forest-labs/FLUX.1-Kontext-dev` sur un système Windows avec une GPU NVIDIA RTX 4090 (24 Go VRAM).
+
+## Phase 1 : Résolution du Bug de Blocage (Software)
+
+### Problème Initial
+Le script se bloque indéfiniment sans message d'erreur après le téléchargement des modèles, juste après l'affichage du message `You set \`add_prefix_space\`. The tokenizer needs to be converted from the slow tokenizers`.
+
+### Tâches et Actions Effectuées
+
+1.  **Hypothèse : Saturation Mémoire (VRAM/RAM)**
+    *   **Action :** Modification du script pour charger/décharger les modèles séquentiellement.
+    *   **Action :** Ajout de l'option `torch_dtype=torch.float16`.
+    *   **Action :** Activation de `pipe.enable_model_cpu_offload()`.
+    *   **Résultat :** ❌ Échec. Le blocage persiste au même endroit.
+
+2.  **Hypothèse : Problème de Cache ou d'Authentification Hugging Face**
+    *   **Action :** Suppression complète du dossier cache (`.cache/huggingface`).
+    *   **Action :** Ré-authentification via `huggingface-cli login` avec un token valide.
+    *   **Résultat :** ✅ A résolu une erreur `401 Gated Repo` sous-jacente, mais le blocage persiste.
+
+3.  **Hypothèse : Bug du Tokenizer Rapide (Rust) sur Windows**
+    *   **Action :** Reconstruction complète de l'environnement virtuel (`venv`) pour éliminer les corruptions.
+    *   **Action :** "Épinglage" des versions des bibliothèques à un couple stable connu (`transformers==4.48.1`, `tokenizers==0.21.0`, etc.).
+    *   **Action :** Installation des dépendances manquantes potentiellement invoquées par le tokenizer (`sentencepiece`, `protobuf`).
+    *   **Action :** Désactivation du parallélisme du tokenizer via les variables d'environnement.
+        ```bash
+        $env:TOKENIZERS_PARALLELISM="false"; $env:RAYON_NUM_THREADS="1";
+        ```
+    *   **Résultat :** ✅ **Succès. Le script ne se bloque plus et commence la génération.**
+
+---
+
+## Phase 2 : Résolution de la Lenteur Extrême (Hardware)
+
+### Nouveau Problème
+Le script s'exécute, mais la génération d'image est anormalement lente (> 5 minutes par itération), rendant le processus inutilisable.
+
+### Tâches et Actions Effectuées
+
+1.  **Diagnostic via `nvidia-smi`**
+    *   **Action :** Surveillance de l'utilisation des ressources pendant l'exécution.
+    *   **Constat :** VRAM saturée à 98-100% (24 Go / 24 Go) et faible consommation électrique (~100W / 450W).
+    *   **Conclusion :** Le système est en "swapping" constant entre la VRAM et la RAM système, ce qui cause la lenteur.
+
+2.  **Hypothèse : Gestion Mémoire Insuffisante dans le Script**
+    *   **Action :** Implémentation d'un script `v4` avec déchargement séquentiel et **nettoyage forcé de la mémoire** (`gc.collect()`, `torch.cuda.empty_cache()`).
+    *   **Résultat :** ❌ Échec. La VRAM est bien libérée après le déchargement du VLM, mais le chargement du pipeline FLUX.1 seul sature de nouveau les 24 Go.
+
+3.  **Hypothèse : Le Modèle Seul Dépasse la VRAM Disponible**
+    *   **Action :** Implémentation d'un script `v5` utilisant l'**offload séquentiel** (`pipe.enable_sequential_cpu_offload()`) pour ne charger que les couches nécessaires du modèle dans la VRAM.
+    *   **Résultat :** ❌ Échec. La VRAM se sature malgré tout, indiquant qu'une partie non-déchargeable du modèle est déjà trop volumineuse.
+
+---
+
+## ✅ Diagnostic Final et Solution
+
+### Cause Racine
+Le modèle `black-forest-labs/FLUX.1-Kontext-dev` dans sa version standard en demi-précision (`float16`) **requiert plus de 24 Go de VRAM pour fonctionner efficacement**. Le problème n'est pas un bug logiciel mais une contrainte matérielle. Toutes les optimisations logicielles standards ont été tentées sans succès.
+
+### Plan d'Action Recommandé
+
+La seule solution viable est d'utiliser une version allégée (quantifiée) du modèle, gérée par un écosystème spécialisé.
+
+-   [ ] **1. Abandonner l'approche par script Python direct** pour ce modèle et cette configuration.
+-   [ ] **2. Installer ComfyUI**, une interface graphique puissante pour les modèles de diffusion.
+-   [ ] **3. Installer le `ComfyUI Manager`** pour gérer facilement les extensions.
+-   [ ] **4. Installer le plugin `Nunchaku`** via le Manager, qui est optimisé pour les modèles FLUX.
+-   [ ] **5. Télécharger une version quantifiée du modèle**, comme `FLUX.1-Kontext-dev-fp16.gguf` depuis le projet Nunchaku sur Hugging Face.
+-   [ ] **6. Placer le modèle `.gguf`** dans le dossier approprié de ComfyUI (ex: `ComfyUI/models/checkpoints/`).
+-   [ ] **7. Utiliser un workflow ComfyUI adapté** pour Nunchaku pour générer les images. Cet écosystème gérera intelligemment la mémoire pour permettre l'exécution sur des configurations avec moins de VRAM.
 
 
 ## Upscaling video avec <a href="https://github.com/xh9998/DiffVSR">DiffVSR</a> 
