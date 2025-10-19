@@ -304,6 +304,78 @@ Sur Github <a href="https://github.com/xh9998/DiffVSR">DiffVSR</a>
 <img src="https://github.com/xh9998/DiffVSR/blob/master/assets/teaser.png?raw=true" alt="your-alt-text" width="500"/>
 
 
+Excellente question. C'est une situation très courante et il existe une méthode propre pour la gérer sans conflit.
+
+La solution consiste à cloner le dépôt de modèles de Hugging Face **directement dans le sous-dossier approprié** du projet que vous avez cloné depuis GitHub.
+
+Voici le flux de travail étape par étape. Je vais utiliser l'exemple de `DiffVSR` que vous avez montré.
+
+---
+
+### Méthode Recommandée : Cloner l'un dans l'autre
+
+#### Étape 1 : Cloner le code du projet depuis GitHub
+
+C'est votre base. Ouvrez votre terminal, naviguez vers votre espace de travail (ex: `Documents/projets`) et clonez le dépôt contenant le code.
+
+```bash
+# Allez dans votre dossier de projets
+cd C:\Users\VotreNom\Documents\projets
+
+# Clonez le code depuis GitHub
+git clone https://github.com/huihui-hub/DiffVSR.git
+```
+Vous avez maintenant un dossier `DiffVSR` contenant tout le code (`.py`, `requirements.txt`, etc.).
+
+#### Étape 2 : Entrer dans le dossier du projet
+
+C'est l'étape cruciale. Déplacez-vous à l'intérieur du dossier que vous venez de créer.
+
+```bash
+cd DiffVSR
+```
+Vous êtes maintenant à la racine du projet (`C:\Users\VotreNom\Documents\projets\DiffVSR`).
+
+#### Étape 3 : Cloner les modèles de Hugging Face dans le bon sous-dossier
+
+Les instructions de `DiffVSR` disent de placer les modèles dans un dossier `pretrained_models`. Nous allons donc cloner le dépôt de Hugging Face et le nommer `pretrained_models` en même temps.
+
+La syntaxe pour cela est : `git clone <URL_DU_DÉPÔT> <NOM_DU_DOSSIER_LOCAL>`
+
+**Exécutez cette commande pendant que vous êtes à l'intérieur du dossier `DiffVSR` :**
+
+```bash
+# N'oubliez pas d'installer Git LFS avant ! (git lfs install)
+git clone https://huggingface.co/huihui9998/DiffVSR pretrained_models
+```
+
+**Que fait cette commande ?**
+*   Elle clone le dépôt de modèles depuis Hugging Face.
+*   Au lieu de créer un dossier conflictuel nommé `DiffVSR`, elle place tout le contenu dans un **nouveau dossier** que vous nommez `pretrained_models`.
+
+---
+
+### Résultat Final
+
+Après avoir suivi ces étapes, votre structure de dossiers sera parfaitement organisée et correcte, comme ceci :
+
+```
+projets/
+└── DiffVSR/              <-- Dossier du clone GitHub (le code)
+    ├── inference_tile.py
+    ├── requirements.txt
+    ├── ... (autres fichiers de code)
+    └── pretrained_models/    <-- Dossier du clone Hugging Face (les modèles)
+        ├── TE-3DVAE.pt
+        ├── DiffVSR_UNet.pt
+        └── upscaler4x/
+            ├── x4-upscaler-ema.ckpt
+            └── ... (autres modèles)
+```
+
+Vous avez maintenant un seul dossier de projet (`DiffVSR`) qui contient à la fois le code et les modèles, exactement comme les instructions du développeur le demandent. C'est la méthode la plus propre et la plus efficace.
+
+
 
 
 
