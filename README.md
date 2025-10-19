@@ -220,7 +220,80 @@ La seule solution viable est d'utiliser une version allégée (quantifiée) du m
 -   [ ] **6. Placer le modèle `.gguf`** dans le dossier approprié de ComfyUI (ex: `ComfyUI/models/checkpoints/`).
 -   [ ] **7. Utiliser un workflow ComfyUI adapté** pour Nunchaku pour générer les images. Cet écosystème gérera intelligemment la mémoire pour permettre l'exécution sur des configurations avec moins de VRAM.
 
+C'est une trouvaille encore meilleure ! Vous avez trouvé le guide **"natif"** pour faire fonctionner le modèle directement dans ComfyUI, ce qui est la méthode la plus propre et la plus stable.
 
+Oubliez le fichier GGUF et le fichier `.json` que nous cherchions. Ce guide que vous venez de trouver est la **voie royale**. Il utilise une version optimisée du modèle (`fp8`) qui est directement compatible avec les nœuds standards de ComfyUI.
+
+### La Différence Clé (et pourquoi c'est mieux)
+
+*   **Méthode 1 (GGUF) :** C'était une version "simplifiée" par un membre de la communauté. Elle est bien, mais elle dépend d'un plugin externe (`ComfyUI-GGUF`) pour fonctionner.
+*   **Méthode 2 (Native - Ce Guide) :** C'est la version **recommandée et intégrée à ComfyUI**. Elle utilise des fichiers `.safetensors` et des nœuds standards. C'est plus stable, plus optimisé et la méthode "officielle" pour ComfyUI.
+
+**Abandonnons la méthode GGUF. Ce guide est la meilleure voie à suivre.**
+
+---
+
+### Votre Nouveau Plan d'Action Final (Basé sur le Guide Natif)
+
+Suivez ce plan à la lettre. Il est basé sur les informations exactes que vous avez trouvées.
+
+#### Étape 1 : Mettre à Jour ComfyUI
+
+Le guide insiste sur ce point. Avant toute chose, assurez-vous que votre ComfyUI est à jour. Si vous avez le `ComfyUI Manager`, utilisez-le pour tout mettre à jour. Sinon, suivez le guide de mise à jour de ComfyUI.
+
+#### Étape 2 : Télécharger les 4 Fichiers Modèles Requis
+
+Ce guide n'utilise pas un seul gros fichier, mais quatre fichiers plus petits et spécialisés. Vous devez télécharger chacun d'eux.
+
+1.  **Modèle de Diffusion (le principal) :**
+    *   `flux1-dev-kontext_fp8_scaled.safetensors` (FP8 est une version 8-bit, très légère, parfaite pour vous !)
+2.  **VAE (encode et décode l'image) :**
+    *   `ae.safetensors`
+3.  **Encodeur de Texte 1 (CLIP) :**
+    *   `clip_l.safetensors`
+4.  **Encodeur de Texte 2 (T5) :**
+    *   `t5xxl_fp8_e4m3fn_scaled.safetensors` (Prenez cette version `fp8`, elle est plus petite et plus rapide)
+
+#### Étape 3 : Placer les Modèles dans les Bons Dossiers
+
+C'est l'étape la plus importante. Vous devez respecter scrupuleusement cette structure de dossiers dans votre installation de ComfyUI :
+
+```
+📂 ComfyUI/
+└── 📂 models/
+    ├── 📂 diffusion_models/
+    │   └── flux1-dev-kontext_fp8_scaled.safetensors  <-- Le modèle principal va ici
+    │
+    ├── 📂 vae/
+    │   └── ae.safetensors                          <-- Le VAE va ici
+    │
+    └── 📂 text_encoders/
+        ├── clip_l.safetensors                      <-- L'encodeur CLIP va ici
+        └── t5xxl_fp8_e4m3fn_scaled.safetensors     <-- L'encodeur T5 va ici
+```
+
+#### Étape 4 : Charger le Workflow Natif
+
+Le guide explique que vous n'avez pas besoin de télécharger un fichier `.json`. Le workflow est déjà **inclus dans les modèles de ComfyUI**.
+
+1.  Lancez ComfyUI.
+2.  Sur la droite de l'interface, cherchez un bouton **"Templates"** ou **"Examples"** (Modèles/Exemples).
+3.  Dans la liste qui apparaît, cherchez un workflow nommé **"FLUX.1 Kontext Dev"** ou similaire.
+4.  Cliquez dessus pour le charger.
+
+#### Étape 5 : Exécuter
+
+Le workflow sera chargé avec tous les nœuds déjà connectés. Il ne vous restera plus qu'à :
+1.  Vérifier que les bons modèles sont sélectionnés dans les nœuds de chargement (ils devraient l'être par défaut).
+2.  Charger votre image d'entrée.
+3.  Écrire votre instruction.
+4.  Cliquer sur **"Queue Prompt"**.
+
+---
+
+### Conclusion
+
+Vous avez trouvé la méthode la plus propre et la plus stable. Elle demande un peu plus de préparation (télécharger 4 fichiers et les classer), mais le résultat sera bien meilleur. Suivez ce guide à la lettre, et vous y arriverez.
 ## Upscaling video avec <a href="https://github.com/xh9998/DiffVSR">DiffVSR</a> 
 
 <img src="https://github.com/xh9998/DiffVSR/blob/master/assets/teaser.png?raw=true" alt="your-alt-text" width="500"/>
