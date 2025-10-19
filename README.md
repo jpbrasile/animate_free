@@ -297,7 +297,7 @@ Le workflow sera chargé avec tous les nœuds déjà connectés. Il ne vous rest
 ### Conclusion
 
 Vous avez trouvé la méthode la plus propre et la plus stable. Elle demande un peu plus de préparation (télécharger 4 fichiers et les classer), mais le résultat sera bien meilleur. Suivez ce guide à la lettre, et vous y arriverez.
-## Upscaling video avec <a href="https://github.com/xh9998/DiffVSR">DiffVSR</a> 
+## Upscaling video avec <a href="git clone https://huggingface.co/huihui9998/DiffVSR">DiffVSR</a> 
 
 <img src="https://github.com/xh9998/DiffVSR/blob/master/assets/teaser.png?raw=true" alt="your-alt-text" width="500"/>
 
