@@ -289,6 +289,9 @@ Le workflow sera chargé avec tous les nœuds déjà connectés. Il ne vous rest
 3.  Écrire votre instruction.
 4.  Cliquer sur **"Queue Prompt"**.
 
+
+ça fonctionne en quelques secondes cette fois :<img width="1811" height="1140" alt="image" src="https://github.com/user-attachments/assets/36aa1b51-0c93-45ec-b0c6-aeb30e9bcf4a" />
+ 
 ---
 
 ### Conclusion
